@@ -1,5 +1,3 @@
-//go:build ignore
-
 package main
 
 import (
@@ -79,7 +77,7 @@ func (u User) ChangeName(newName string) {
 func (u *User) ChangeAge(newAge int) {
 	u.Age = newAge
 }
-func main() {
+func example5() {
 	//u是结构体，所以方法调用的时候它数值是不会变的
 	u := User{
 		Name: "Tom",
@@ -98,4 +96,70 @@ func main() {
 	up.ChangeName("Jerry Changed")
 	up.ChangeAge(120)
 	fmt.Printf("%v \n", up)
+}
+
+type Server interface {
+	//method post get put delete
+	Route(pattern string, handleFunc func(ctx *Context))
+	Start(address string) error
+}
+
+// sdkHttpServer基于http库实现
+type sdkHttpServer struct {
+	Name string
+}
+
+// Route 注册路由
+func (s *sdkHttpServer) Route(pattern string, handleFunc func(ctx *Context)) {
+	http.HandleFunc(pattern, func(writer http.ResponseWriter, reques *http.Request) {
+		ctx := &Context{
+			R: reques,
+			W: writer,
+		}
+		handleFunc(ctx)
+	})
+}
+func (s *sdkHttpServer) Start(address string) error {
+	return http.ListenAndServe(address, nil)
+}
+func NewHttpServer(name string) Server {
+	return &sdkHttpServer{
+		Name: name,
+	}
+}
+
+type signUpReq struct {
+	Email             string `json:"email"`
+	Password          string `json:"password"`
+	ConfirmedPassword string `json:"confirmed_password"`
+}
+type commonResponse struct {
+	BizCode int         `json:"biz_code"`
+	Msg     string      `json:"msg"`
+	Data    interface{} `json:"data"`
+}
+
+func SignUp(ctx *Context) {
+	req := &signUpReq{}
+
+	err := ctx.ReadJson(req)
+	if err != nil {
+		ctx.BadRequestJson(err)
+		return
+	}
+
+	resp := &commonResponse{
+		Data: 123,
+	}
+	err = ctx.WriteJson(http.StatusOK, resp)
+	if err != nil {
+		fmt.Printf("写入响应失败: %v", err)
+	}
+}
+
+func main() {
+	server := NewHttpServer("test-server")
+	// server.Route("/", handler)
+	server.Route("/user/signup", SignUp)
+	server.Start(":8080")
 }
