@@ -100,26 +100,33 @@ func example5() {
 
 type Server interface {
 	//method post get put delete
-	Route(pattern string, handleFunc func(ctx *Context))
+	Route(method string, pattern string, handleFunc func(ctx *Context))
 	Start(address string) error
 }
 
 // sdkHttpServer基于http库实现
 type sdkHttpServer struct {
-	Name string
+	Name    string
+	handler *HandlerBasedOnMap
 }
 
 // Route 注册路由
-func (s *sdkHttpServer) Route(pattern string, handleFunc func(ctx *Context)) {
-	http.HandleFunc(pattern, func(writer http.ResponseWriter, reques *http.Request) {
-		ctx := &Context{
-			R: reques,
-			W: writer,
-		}
-		handleFunc(ctx)
-	})
+func (s *sdkHttpServer) Route(method string, pattern string, handleFunc func(ctx *Context)) {
+	//没有post delete put get
+	// http.HandleFunc(pattern, func(writer http.ResponseWriter, reques *http.Request) {
+	// 	ctx := &Context{
+	// 		R: reques,
+	// 		W: writer,
+	// 	}
+	// 	handleFunc(ctx)
+	// })
+	//有post delete put get
+	key := s.handler.key(method, pattern)
+	s.handler.handlers[key] = handleFunc
+
 }
 func (s *sdkHttpServer) Start(address string) error {
+	http.Handle("/", s.handler)
 	return http.ListenAndServe(address, nil)
 }
 func NewHttpServer(name string) Server {
