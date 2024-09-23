@@ -154,7 +154,6 @@ func SignUp(ctx *Context) {
 		ctx.BadRequestJson(err)
 		return
 	}
-
 	resp := &commonResponse{
 		Data: 123,
 	}
