@@ -48,6 +48,9 @@ func test_test1() {
 	fmt.Println(strings.TrimRight("#hello go$", "#$"))
 
 }
+func test_test2() {
+
+}
 func main() {
 	test_test1()
 }

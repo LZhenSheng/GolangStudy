@@ -48,7 +48,7 @@ func string_api_test7() {
 	fmt.Println(strings.Count("cheese", "e"))
 	fmt.Println(strings.Count("five", "")) // before & after each rune
 }
-func string_api_test() {
+func string_api_test8() {
 	show := func(s, sep string) {
 		before, after, found := strings.Cut(s, sep)
 		fmt.Printf("Cut(%q, %q) = %q, %q, %v\n", s, sep, before, after, found)
@@ -57,6 +57,25 @@ func string_api_test() {
 	show("Gopher", "ph")
 	show("Gopher", "er")
 	show("Gopher", "Badger")
+}
+func string_api_test9() {
+	show := func(s, sep string) {
+		after, found := strings.CutPrefix(s, sep)
+		fmt.Printf("CutPrefix(%q, %q) = %q, %v\n", s, sep, after, found)
+	}
+	show("Gopher", "Go")
+	show("Gopher", "ph")
+}
+func string_api_test10() {
+	show := func(s, sep string) {
+		before, found := strings.CutSuffix(s, sep)
+		fmt.Printf("CutSuffix(%q, %q) = %q, %v\n", s, sep, before, found)
+	}
+	show("Gopher", "Go")
+	show("Gopher", "er")
+}
+func string_api_test() {
+
 }
 func main() {
 	string_api_test()
