@@ -229,6 +229,98 @@ func test14() {
 	const name, age = "Kim", 22
 	fmt.Print(name, " is ", age, " years old.\n")
 }
+func test15() {
+	var num int
+	var str string
+	fmt.Scan(&num, &str)
+	fmt.Println(num, str)
+	fmt.Scanf("%d %s", &num, &str)
+	fmt.Println(num, str)
+	fmt.Scanln(&num, &str)
+	fmt.Println(num, str)
+}
+func test16() {
+	const name, age = "Kim", 22
+	s := fmt.Sprint(name, " is ", age, " years old.\n")
+	io.WriteString(os.Stdout, s)
+}
+func test17() {
+	var name string
+	var age int
+	n1, err := fmt.Sscan("Kim 22", &name, &age)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%d: %s, %d\n", n1, name, age)
+	n, err := fmt.Sscanf("Kim is 22 years old", "%s is %d years old", &name, &age)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%d: %s, %d\n", n, name, age)
+}
+
+// Address has a City, State and a Country.
+type Address struct {
+	City    string
+	State   string
+	Country string
+}
+
+// Person has a Name, Age and Address.
+type Person struct {
+	Name string
+	Age  uint
+	Addr *Address
+}
+
+// GoString makes Person satisfy the GoStringer interface.
+// The return value is valid Go code that can be used to reproduce the Person struct.
+func (p Person) GoString() string {
+	if p.Addr != nil {
+		return fmt.Sprintf("Person{Name: %q, Age: %d, Addr: &Address{City: %q, State: %q, Country: %q}}", p.Name, int(p.Age), p.Addr.City, p.Addr.State, p.Addr.Country)
+	}
+	return fmt.Sprintf("Person{Name: %q, Age: %d}", p.Name, int(p.Age))
+}
+func test18() {
+	p1 := Person{
+		Name: "Warren",
+		Age:  31,
+		Addr: &Address{
+			City:    "Denver",
+			State:   "CO",
+			Country: "U.S.A.",
+		},
+	}
+	// If GoString() wasn't implemented, the output of `fmt.Printf("%#v", p1)` would be similar to
+	// Person{Name:"Warren", Age:0x1f, Addr:(*main.Address)(0x10448240)}
+	fmt.Printf("%#v\n", p1)
+
+	p2 := Person{
+		Name: "Theia",
+		Age:  4,
+	}
+	// If GoString() wasn't implemented, the output of `fmt.Printf("%#v", p2)` would be similar to
+	// Person{Name:"Theia", Age:0x4, Addr:(*main.Address)(nil)}
+	fmt.Printf("%#v\n", p2)
+}
+
+// Animal has a Name and an Age to represent an animal.
+type Animal struct {
+	Name string
+	Age  uint
+}
+
+// String makes Animal satisfy the Stringer interface.
+func (a Animal) String() string {
+	return fmt.Sprintf("%v (%d)", a.Name, a.Age)
+}
+func test19() {
+	a := Animal{
+		Name: "Gopher",
+		Age:  2,
+	}
+	fmt.Println(a)
+}
 func main() {
 	//test1()
 	//test2()
@@ -242,5 +334,9 @@ func main() {
 	// test10()
 	//test12()
 	// test13()
-	test14()
+	// test15()
+	// test16()
+	// test17()
+	// test18()
+	test19()
 }
