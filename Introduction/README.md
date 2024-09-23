@@ -10,3 +10,8 @@ A Simple Web Server
 高性能字符串拼接 [代码](https://github.com/LZhenSheng/GolangStudy/blob/main/Introduction/string_concatenation.go)
 
 格式化输入输出 [代码](https://github.com/LZhenSheng/GolangStudy/blob/main/Introduction/standard_streams.go) [博客](https://blog.csdn.net/weixin_44575660/article/details/142450130?spm=1001.2014.3001.5501)
+
+### 待更新
+1、类型转换
+2、strings
+3、byte rune
