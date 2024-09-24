@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"unicode"
 	"unsafe"
 )
 
@@ -74,8 +75,57 @@ func string_api_test10() {
 	show("Gopher", "Go")
 	show("Gopher", "er")
 }
-func string_api_test() {
+func string_api_test11() {
+	fmt.Println(strings.EqualFold("Go", "go"))
+	fmt.Println(strings.EqualFold("AB", "ab")) // true because comparison uses simple case-folding
+	fmt.Println(strings.EqualFold("ß", "ss"))  // false because comparison does not use full case-folding
+}
+func string_api_test12() {
+	fmt.Printf("Fields are: %q", strings.Fields("  foo bar  baz   "))
 
+}
+func string_api_test13() {
+	f := func(c rune) bool {
+		return !unicode.IsLetter(c) && !unicode.IsNumber(c)
+	}
+	fmt.Printf("Fields are: %q", strings.FieldsFunc("  foo1;bar2,baz3...", f))
+}
+func string_api_test14() {
+	fmt.Println(strings.HasPrefix("Gopher", "Go"))
+	fmt.Println(strings.HasPrefix("Gopher", "C"))
+	fmt.Println(strings.HasPrefix("Gopher", ""))
+}
+func string_api_test15() {
+	fmt.Println(strings.HasSuffix("Amigo", "go"))
+	fmt.Println(strings.HasSuffix("Amigo", "O"))
+	fmt.Println(strings.HasSuffix("Amigo", "Ami"))
+	fmt.Println(strings.HasSuffix("Amigo", ""))
+}
+func string_api_test16() {
+	fmt.Println(strings.Index("chicken", "ken"))
+	fmt.Println(strings.Index("chicken", "dmr"))
+	fmt.Println(strings.Index("我爱go", "爱"))
+}
+func string_api_test17() {
+	fmt.Println(strings.IndexAny("chicken", "aeiouy"))
+	fmt.Println(strings.IndexAny("crwth", "aeiouy"))
+	fmt.Println(strings.IndexAny("我爱go", "爱"))
+}
+func string_api_test18() {
+	fmt.Println(strings.IndexByte("golang", 'g'))
+	fmt.Println(strings.IndexByte("gophers", 'h'))
+	fmt.Println(strings.IndexByte("golang", 'x'))
+}
+func string_api_test19() {
+	f := func(c rune) bool {
+		return unicode.Is(unicode.Han, c)
+	}
+	fmt.Println(strings.IndexFunc("Hello, 世界", f))
+	fmt.Println(strings.IndexFunc("Hello, world", f))
+}
+func string_api_test() {
+	fmt.Println(strings.IndexRune("chicken", 'k'))
+	fmt.Println(strings.IndexRune("chicken", 'd'))
 }
 func main() {
 	string_api_test()
