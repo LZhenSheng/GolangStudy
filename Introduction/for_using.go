@@ -21,10 +21,17 @@ func for_api_test1() {
 // for range字符串、数组、切片、map、channel
 // 字符串 字符串的索引 字符串索引的字符拷贝 ，如果不写key返回的是索引
 func for_api_test2() {
-	name := "我爱学习"
-	for index, value := range name {
+	//中文可以使用 index,value格式 或者 转为rune
+	name := "我爱学习go"
+	nameRune := []rune(name)
+	for index := range nameRune {
+		fmt.Printf("%c", nameRune[index])
+	}
+	for index := range name {
 		// fmt.Println(index, value)
-		fmt.Printf("%d %c\n", index, value)
+		// fmt.Printf("%d %c\n", index, value)
+		fmt.Printf("%c", name[index])
+
 	}
 	for index := range name {
 		// fmt.Println(index)
