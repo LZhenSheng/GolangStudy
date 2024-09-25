@@ -16,5 +16,5 @@ strings api [代码](https://github.com/LZhenSheng/GolangStudy/blob/main/Introdu
 
 ### 待更新
 1、类型转换
-
+2、time
 3、byte rune
