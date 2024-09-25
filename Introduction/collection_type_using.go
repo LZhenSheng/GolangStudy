@@ -43,6 +43,43 @@ func collection_type_test1() {
 
 }
 func collection_type_test() {
+	//go 弱化数组功能，提供切片实现动态数组功能
+	var course []string
+	fmt.Printf("%T\n", course)
+
+	//这个方法很特别，第一次用很头疼
+	course = append(course, "go")
+	fmt.Println(course)
+
+	//切片初始化三种方法:1.数组直接创建,2.使用string{},3.make
+	allCourses := []string{"go", "grpc", "gin", "mysql"}
+	courseSlice := allCourses[0:1]
+	allCourses = append(allCourses, "dlskjf", "dlskjf", "dslkjfsdf", "dlsjfk")
+	courseSlice = append(courseSlice, allCourses...)
+	fmt.Println(allCourses)
+	fmt.Println(courseSlice)
+
+	//make函数
+	allCourses2 := make([]string, 3)
+	allCourses2[0] = "c"
+	fmt.Println(allCourses2)
+
+	//切片删除元素
+	courseSlice2 := []string{"go", "grpc", "mysql", "es", "gin"}
+	myslice := append(courseSlice2[:2], courseSlice2[3:]...)
+	fmt.Println(myslice)
+
+	//复制slice
+	// courseSliceCopy := courseSlice
+	// courseSliceCopy2 := courseSlice[:]
+	// fmt.Println(courseSliceCopy)
+	// fmt.Println(courseSliceCopy2)
+
+	var courseSliceCopy = make([]string, len(courseSlice2))
+	copy(courseSliceCopy, courseSlice2)
+	courseSliceCopy[0] = "java"
+	fmt.Println(courseSliceCopy)
+	fmt.Println(courseSlice2)
 
 }
 func main() {
