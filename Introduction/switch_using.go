@@ -21,4 +21,21 @@ func main() {
 	default:
 		fmt.Println("UnKnown")
 	}
+
+	score := 60
+	switch {
+	case score < 60:
+		fmt.Println("E")
+	case score >= 60 && score < 70:
+		fmt.Println("D")
+	default:
+		fmt.Println("C")
+	}
+
+	switch score {
+	case 60, 70, 80:
+		fmt.Println("wow")
+	default:
+		fmt.Println("default")
+	}
 }
