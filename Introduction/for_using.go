@@ -19,9 +19,9 @@ func for_api_test1() {
 }
 
 // for range字符串、数组、切片、map、channel
-func for_api_test() {
-	//字符串 字符串的索引 字符串索引的字符拷贝 ，如果不写key返回的是索引
-	name := "imooc go"
+// 字符串 字符串的索引 字符串索引的字符拷贝 ，如果不写key返回的是索引
+func for_api_test2() {
+	name := "我爱学习"
 	for index, value := range name {
 		// fmt.Println(index, value)
 		fmt.Printf("%d %c\n", index, value)
@@ -30,9 +30,52 @@ func for_api_test() {
 		// fmt.Println(index)
 		fmt.Printf("%d\n", index)
 	}
-
 }
-func main() {
-	for_api_test()
 
+// 数组 数组的索引 数组索引的字符拷贝 ，如果不写key返回的是索引
+func for_api_test3() {
+	arr := [3]int{1, 3, 4}
+	for index, value := range arr {
+		// fmt.Println(index, value)
+		fmt.Printf("%d %d\n", index, value)
+	}
+	for index := range arr {
+		// fmt.Println(index)
+		fmt.Printf("%d\n", index)
+	}
+}
+
+// 切片 切片的索引 切片索引的字符拷贝 ，如果不写key返回的是索引
+func for_api_test4() {
+	arr := []int{1, 3, 4}
+	for index, value := range arr {
+		// fmt.Println(index, value)
+		fmt.Printf("%d %d\n", index, value)
+	}
+	for index := range arr {
+		// fmt.Println(index)
+		fmt.Printf("%d\n", index)
+	}
+}
+
+// map map的索引 map索引的字符拷贝 ，如果不写key返回的是map的值
+func for_api_test() {
+	mapCode := map[string]string{
+		"Golang": "my love",
+		"Java":   "I can do it",
+		"Python": "I am studying",
+	}
+	for index, value := range mapCode {
+		// fmt.Println(index, value)
+		fmt.Printf("%s %s\n", index, value)
+	}
+	for value := range mapCode {
+		// fmt.Println(value)
+		fmt.Printf("%s\n", value)
+	}
+}
+
+// channel value返回的是channel接受的数据
+func main() {
+	for_api_test2()
 }
