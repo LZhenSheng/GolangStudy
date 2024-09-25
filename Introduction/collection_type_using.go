@@ -1,7 +1,9 @@
 package main
 
 import (
+	"container/list"
 	"fmt"
+	"sync"
 )
 
 // 集合类型包括数组、切片、map、list
@@ -111,7 +113,7 @@ func collection_type_test3() {
 		fmt.Println("len: %d, cap: %d\r\n", len(data), cap(data))
 	}
 }
-func collection_type_test() {
+func collection_type_test4() {
 	//map是一个key和value的无序集合，主要是查询方便o(1)
 	var courseMap = map[string]string{
 		"go":   "go工程师",
@@ -126,6 +128,7 @@ func collection_type_test() {
 	fmt.Println(courseMap)
 
 	//map必须初始化之后使用
+	//map切片不能当作map索引，但数组可以
 	var courseM = map[string]string{}
 	var courseMM = make(map[string]string, 3)
 	fmt.Println(courseM)
@@ -136,7 +139,70 @@ func collection_type_test() {
 		fmt.Println("yes")
 	}
 	m = append(m, "dslkjf")
+
+	//遍历
+	for key, value := range courseMap {
+		fmt.Println(key, value)
+	}
+	for key := range courseMap {
+		fmt.Println(key, courseMap[key])
+	}
+	//map是无序的，而且可能每次打印都不一样
+	d, ok := courseMap["java"]
+	if !ok {
+		fmt.Println("not in")
+	} else {
+		fmt.Println("find", d)
+	}
+
+	//删除一个数据
+	delete(courseMap, "grpc")
+	fmt.Println(courseMap)
+
+	//线程安全的map
+	var syncMap sync.Map
+	fmt.Println(syncMap)
+}
+func collection_type_test() {
+	//list 空间浪费、空间不连续、性能差异大
+	var mylist list.List
+	mylist.PushBack("go")
+	mylist.PushBack("grpc")
+	mylist.PushBack("mysql")
+	fmt.Println(mylist)
+	//遍历打印值，正向
+	for i := mylist.Front(); i != nil; i = i.Next() {
+		fmt.Println(i.Value)
+	}
+	//遍历打印值，反向
+	for i := mylist.Back(); i != nil; i = i.Prev() {
+		fmt.Println(i.Value)
+	}
+	mylist1 := list.New()
+	mylist1.PushBack("go")
+	mylist.PushFront("ldskfj")
+	mylist1.PushBack("grpc")
+	mylist1.PushBack("mysql")
+	i := mylist1.Back()
+	for ; i != nil; i = i.Prev() {
+		if i.Value.(string) == "grpc" {
+			break
+		}
+		fmt.Println(i.Value)
+	}
+	mylist1.InsertBefore("gin", i)
+	for j := mylist.Front(); j != nil; j = j.Next() {
+		fmt.Println(j.Value)
+	}
+	// mylist1.Remove(i)
+	for j := mylist.Front(); j != nil; j = j.Next() {
+		fmt.Println(j.Value)
+	}
 }
 func main() {
+	//数组-不同长度的数组类型不一样
+	//切片-动态数组，用起来很方便，而且性能高
+	//map
+	//list，用得少
 	collection_type_test()
 }

@@ -20,3 +20,4 @@ for用法 [代码](https://github.com/LZhenSheng/GolangStudy/blob/main/Introduct
 2、time
 3、byte rune
 4、strconv
+5、map、list、slice方法
