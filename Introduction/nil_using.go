@@ -28,11 +28,11 @@ func main() {
 	if ps == nil {
 		fmt.Println("nil slice")
 	}
-	ps2 := make([]Person4, 0) //empty slice
+	ps2 := make([]Person4, 0) //empty slice ptr、len、cap
 	if ps2 == nil {
 		fmt.Println("nil slice")
 	} else {
 		fmt.Println("not nil slice")
 	}
-
+	//nil map需要初始化，不初始化也可以get
 }
