@@ -9,6 +9,9 @@ type Person3 struct {
 func changeName(p *Person3) {
 	p.name = "imooc"
 }
+func swap(a, b *int) {
+	a, b = b, a
+}
 func main() {
 	p := Person3{
 		name: "boddy",
