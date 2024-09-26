@@ -29,6 +29,8 @@ type MyPerson struct {
 //		}
 //		score float32
 //	}
+//
+// 修改结构体的值或者对象很大（拷贝占用很大的内存空间）
 func (p MyPerson) print() {
 	fmt.Printf("name:%s,age:%d\n", p.name, p.age)
 }
