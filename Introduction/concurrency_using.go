@@ -11,6 +11,22 @@ import (
 func asyncPrint() {
 	fmt.Println("bobby")
 }
+
+var total int
+var wg sync.WaitGroup
+
+func add1() {
+	defer wg.Done()
+	for i := 0; i < 100000; i++ {
+		total += 1
+	}
+}
+func sub1() {
+	defer wg.Done()
+	for i := 0; i < 100000; i++ {
+		total -= 1
+	}
+}
 func main() {
 	// go asyncPrint()
 	// time.Sleep(time.Second)
@@ -52,7 +68,7 @@ func main() {
 	//go语言生成一些线程，GMP
 
 	//子goroutine如何通知到主的goroutine自己结束了，主的goroutine如何知道子的goroutine已经结束了
-	var wg sync.WaitGroup
+	// var wg sync.WaitGroup
 	//监控多少个goroutine
 	// wg.Add(100)
 	// for i := 0; i < 100; i++ {
@@ -65,16 +81,25 @@ func main() {
 	// wg.Wait()
 	// fmt.Println("all done")
 
-	wg.Add(100)
-	for i := 0; i < 100; i++ {
-		go func(i int) {
-			defer wg.Done()
-			fmt.Println(i)
-		}(i)
-	}
-	//等待
-	wg.Wait()
-	fmt.Println("all done")
+	// wg.Add(100)
+	// for i := 0; i < 100; i++ {
+	// 	go func(i int) {
+	// 		defer wg.Done()
+	// 		fmt.Println(i)
+	// 	}(i)
+	// }
+	// //等待
+	// wg.Wait()
+	// fmt.Println("all done")
 
 	//waitgroup主要用于goroutine的执行等到，add和done配套使用
+
+	//goroutine锁
+	//锁-竞争
+
+	wg.Add(2)
+	go add1()
+	go sub1()
+	wg.Wait()
+	fmt.Println(total)
 }
