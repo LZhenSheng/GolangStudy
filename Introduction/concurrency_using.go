@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"sync"
 )
 
 // python,java,php多线程编程、多进程编程，多线程和多进程存在的问题主要是耗费内存
@@ -41,11 +41,40 @@ func main() {
 	// fmt.Println("main goroutine")
 	// time.Sleep(10 * time.Second)
 
+	// for i := 0; i < 100; i++ {
+	// 	go func(i int) {
+	// 		fmt.Println(i)
+	// 	}(i)
+	// }
+	// fmt.Println("main goroutine")
+	// time.Sleep(10 * time.Second)
+
+	//go语言生成一些线程，GMP
+
+	//子goroutine如何通知到主的goroutine自己结束了，主的goroutine如何知道子的goroutine已经结束了
+	var wg sync.WaitGroup
+	//监控多少个goroutine
+	// wg.Add(100)
+	// for i := 0; i < 100; i++ {
+	// 	go func(i int) {
+	// 		fmt.Println(i)
+	// 		wg.Done()
+	// 	}(i)
+	// }
+	// //等待
+	// wg.Wait()
+	// fmt.Println("all done")
+
+	wg.Add(100)
 	for i := 0; i < 100; i++ {
 		go func(i int) {
+			defer wg.Done()
 			fmt.Println(i)
 		}(i)
 	}
-	fmt.Println("main goroutine")
-	time.Sleep(10 * time.Second)
+	//等待
+	wg.Wait()
+	fmt.Println("all done")
+
+	//waitgroup主要用于goroutine的执行等到，add和done配套使用
 }
