@@ -21,7 +21,28 @@ func (pd *pskDuck) Walk() {
 func (pd *pskDuck) Swiming() {
 	fmt.Println("swiming")
 }
+
+type MyWriter interface {
+	Write(string) error
+}
+type MyClose interface {
+	Close() error
+}
+type writerCloser struct{}
+
+func (wc *writerCloser) Write(string) error {
+	fmt.Println("write string")
+	return nil
+}
+func (wc *writerCloser) Close() error {
+	fmt.Println("close")
+	return nil
+}
 func main() {
 	var d Duck = &pskDuck{}
 	d.Gaga()
+
+	var my MyWriter = &writerCloser{}
+	var mc myCloser = &writerCloser{}
+
 }
