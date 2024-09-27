@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"sync/atomic"
@@ -246,21 +247,180 @@ func main() {
 	//select主要作用于多个channel
 	//两个goroutine，某一个执行完成后，我们立马知道
 	// var lock sync.Mutex
-	g1 := make(chan struct{}) //channel多线程安全
-	g2 := make(chan struct{})
-	go func(c chan struct{}) {
-		time.Sleep(time.Second)
-		g1 <- struct{}{}
-	}(g1)
-	go func(c chan struct{}) {
-		time.Sleep(time.Second * 2)
-		g2 <- struct{}{}
-	}(g2)
-	select {
-	case <-g1:
-		fmt.Println("g1 done")
-	case <-g2:
-		fmt.Println("g2 done")
-	}
-	fmt.Println("done")
+	// g1 := make(chan struct{}) //channel多线程安全
+	// g2 := make(chan struct{})
+	// go func(c chan struct{}) {
+	// 	time.Sleep(time.Second)
+	// 	g1 <- struct{}{}
+	// }(g1)
+	// go func(c chan struct{}) {
+	// 	time.Sleep(time.Second * 2)
+	// 	g2 <- struct{}{}
+	// }(g2)
+	//1.某一个分支就绪了就执行该分支2两个都就绪了，随机的执行一个，防止饥饿，某一个一直拿锁
+	// for {
+	// 	select {
+	// 	case <-g1:
+	// 		fmt.Println("g1 done")
+	// 	case <-g2:
+	// 		fmt.Println("g2 done")
+	// 	default:
+	// 		time.Sleep(10 * time.Millisecond)
+	// 		fmt.Println("default")
+	// 	}
+	// }
+
+	// tc := time.NewTicker(5 * time.Second)
+	// for {
+	// 	select {
+	// 	case <-g1:
+	// 		fmt.Println("g1 done")
+	// 	case <-g2:
+	// 		fmt.Println("g2 done")
+	// 	case <-tc.C:
+	// 		fmt.Println("timeout")
+	// 		return
+	// 	}
+	// }
+	// fmt.Println("done")
+
+	//----------------------------------------context解决goroutine的信息传递----------------------------------------
+	//渐进式的方法 有一个goroutine监控cpu的信息
+	// wg.Add(1)
+	// go func() {
+	// 	for {
+	// 		time.Sleep(2 * time.Second)
+	// 		fmt.Println("cpu的信息")
+	// 	}
+	// }()
+	// wg.Wait()
+	// fmt.Println("监控完成")
+
+	//主动退出监控程序 共享变量？？
+	// stop := false
+	// wg.Add(1)
+	// go func() {
+	// 	defer wg.Done()
+	// 	for !stop {
+	// 		time.Sleep(2 * time.Second)
+	// 		fmt.Println("cpu的信息")
+	// 	}
+	// }()
+	// time.Sleep(6 * time.Second)
+	// stop = true
+	// wg.Wait()
+	// fmt.Println("监控完成")
+
+	//主动退出监控程序 channel？？不优雅
+	// stop := make(chan struct{})
+	// wg.Add(1)
+	// go func() {
+	// 	defer wg.Done()
+	// 	for {
+	// 		select {
+	// 		case <-stop:
+	// 			fmt.Println("退出cpu监控")
+	// 			return
+	// 		default:
+	// 			time.Sleep(2 * time.Second)
+	// 			fmt.Println("cpu的信息")
+	// 		}
+	// 	}
+	// }()
+	// time.Sleep(6 * time.Second)
+	// stop <- struct{}{}
+	// wg.Wait()
+	// fmt.Println("监控完成")
+
+	//主动退出监控程序 channel？？优雅
+	// stop := make(chan struct{})
+	// wg.Add(1)
+	// go func(c chan struct{}) {
+	// 	defer wg.Done()
+	// 	for {
+	// 		select {
+	// 		case <-c:
+	// 			fmt.Println("退出cpu监控")
+	// 			return
+	// 		default:
+	// 			time.Sleep(2 * time.Second)
+	// 			fmt.Println("cpu的信息")
+	// 		}
+	// 	}
+	// }(stop)
+	// time.Sleep(6 * time.Second)
+	// stop <- struct{}{}
+	// wg.Wait()
+	// fmt.Println("监控完成")
+
+	//主动退出监控程序 context
+	//context包提供了三种函数WithCancel WithTimeout WithValue
+	//如果你的goroutine函数中，如果希望被控制、超时和传值，但是不希望影响我原来的接口信息，函数第一个参数就是加上一个context
+	// wg.Add(1)
+	// ctx, cancel := context.WithCancel(context.Background())
+	// go func(ctx context.Context) {
+	// 	defer wg.Done()
+	// 	for {
+	// 		select {
+	// 		case <-ctx.Done():
+	// 			fmt.Println("退出cpu监控")
+	// 			return
+	// 		default:
+	// 			time.Sleep(2 * time.Second)
+	// 			fmt.Println("cpu的信息")
+	// 		}
+	// 	}
+	// }(ctx)
+	// time.Sleep(6 * time.Second)
+	// cancel()
+	// wg.Wait()
+	// fmt.Println("监控完成")
+
+	//1主动发起WithCancel
+	// wg.Add(1)
+	// ctx, cancel := context.WithCancel(context.Background())
+	// ctx2, _ := context.WithCancel(ctx)
+	// go func(ctx context.Context) {
+	// 	defer wg.Done()
+	// 	for {
+	// 		select {
+	// 		case <-ctx.Done():
+	// 			fmt.Println("退出cpu监控")
+	// 			return
+	// 		default:
+	// 			time.Sleep(2 * time.Second)
+	// 			fmt.Println("cpu的信息")
+	// 		}
+	// 	}
+	// }(ctx2)
+	// time.Sleep(6 * time.Second)
+	// cancel()
+	// wg.Wait()
+	// fmt.Println("监控完成")
+
+	//2timeout主动超时
+	//3WithDeadline在时间点cancel
+	//4withValue传值
+	ctx, canel := context.WithCancel(context.Background())
+	ctxValue := context.WithValue(ctx, "traceid", "gjw12j")
+	//主动超时
+	wg.Add(1)
+	go func(ctx context.Context) {
+		fmt.Printf("traceid:%s\r\n", ctx.Value("traceid"))
+		defer wg.Done()
+		for {
+			select {
+			case <-ctx.Done():
+				fmt.Println("退出cpu监控")
+				return
+			default:
+				time.Sleep(2 * time.Second)
+				fmt.Println("cpu的信息")
+			}
+		}
+	}(ctxValue)
+	time.Sleep(6 * time.Second)
+	canel()
+	wg.Wait()
+	fmt.Println("监控完成")
 }
