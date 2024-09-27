@@ -38,6 +38,7 @@ func main() {
 	// }
 
 	//性能测试测试核心函数
+	//go test -bench=".*"
 	// func BenchmarAdd(b *testing.B){
 	// 	var a,b,c int
 	// 	a=123
