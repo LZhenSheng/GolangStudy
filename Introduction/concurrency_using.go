@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	"sync/atomic"
 )
 
 // python,java,php多线程编程、多进程编程，多线程和多进程存在的问题主要是耗费内存
@@ -12,19 +13,26 @@ func asyncPrint() {
 	fmt.Println("bobby")
 }
 
-var total int
+var total int32
 var wg sync.WaitGroup
+var lock sync.Mutex
 
 func add1() {
 	defer wg.Done()
 	for i := 0; i < 100000; i++ {
-		total += 1
+		atomic.AddInt32(&total, 1)
+		// lock.Lock()
+		// total += 1
+		// lock.Unlock()
 	}
 }
 func sub1() {
 	defer wg.Done()
 	for i := 0; i < 100000; i++ {
-		total -= 1
+		// lock.Lock()
+		// total -= 1
+		// lock.Unlock()
+		atomic.AddInt32(&total, -1)
 	}
 }
 func main() {
@@ -96,10 +104,13 @@ func main() {
 
 	//goroutine锁
 	//锁-竞争
+	//lock-灵活 atomic包-性能高
+	//锁复制后就失去了锁的效果
 
 	wg.Add(2)
 	go add1()
 	go sub1()
 	wg.Wait()
 	fmt.Println(total)
+
 }
