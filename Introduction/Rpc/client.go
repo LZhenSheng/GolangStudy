@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"net/rpc"
 	"time"
 
 	"github.com/kirinlabs/HttpRequest"
@@ -23,5 +24,18 @@ func Add(a, b int) int {
 	return rspData.Data
 }
 func main() {
-	fmt.Println(Add(2, 2))
+	// fmt.Println(Add(2, 2))
+
+	//rpc快速开发体验
+	//1.建立连接
+	client, err := rpc.Dial("tcp", "localhost:1234")
+	if err != nil {
+		panic("连接失败")
+	}
+	var reply *string = new(string)
+	err = client.Call("HelloService.Hello", "bobby", reply)
+	if err != nil {
+		panic("调用失败")
+	}
+	fmt.Println(*reply)
 }
