@@ -5,6 +5,52 @@ import "fmt"
 func add(a, b int) int {
 	return a + b
 }
+
+type Company struct {
+	Name    string
+	Address string
+}
+type Employee struct {
+	Name    string
+	company Company
+}
+type PrintResult struct {
+	Info string
+	Err  error
+}
+
+func RpcPrintln(employee Employee) PrintResult {
+	/*
+		客户端
+		1.建立连接tcp/http
+		2.将employee对象序列化成json字符串-序列化
+		3.发送json字符串-调用成功后实际上你接受到的是一个二进制的数据
+		4.等待服务器发送结果
+		5将服务返回的数据解析成PrintResult对象-反序列化
+		服务端
+		1.监听网络接口80
+		2.读取数据-二进制的json数据
+		3.对数据进行反序列化Employee对象
+		4.开始处理业务逻辑
+		5.将处理的结果PrintReuslt发序列化成json二进制数据-序列化
+		6.将数据返回
+		序列化和反序列化是可以选择的，不一定要采用json、xml、protobuf、msgpack
+	*/
+}
 func main() {
 	fmt.Println(add(1, 3))
+	//1.这个函数的调用参数如何传递-json（json是一种数据格式的协议）/xml/protobuf/msgpack-编码协议，json不是一个高性能的编码协议
+	//现在网络调用有两个端-客户端、应该干嘛？将数据传输到gin
+	//gin-服务端，服务端负责解析数据
+	fmt.Println(add(1, 2))
+	//将这个打印的工作放在另一个台服务器上，我需要将本地的内存对象struct，这样不行，可行的方式就是将struct序列化成json
+	// fmt.Println(Employee{
+	// 	Name: "bobby",
+	// 	company: Company{
+	// 		Name: "imooc",
+	// 		Address: "beijing",
+	// 	},
+	// })
+	//远程服务器需要将二进制对象反解成struct对象
+	//搞这么麻烦，直接全部使用json去格式化不香嘛？这种做法在浏览器和gin服务之间是可以行，但是如果是一个大型的分布式系统不行
 }
