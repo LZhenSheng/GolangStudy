@@ -1,13 +1,5 @@
 package main
 
-import (
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"strconv"
-	"time"
-)
-
 func add(a, b int) int {
 	return a + b
 }
@@ -43,6 +35,14 @@ type PrintResult struct {
 	序列化和反序列化是可以选择的，不一定要采用json、xml、protobuf、msgpack
 */
 // }
+type HelloService struct {
+}
+
+func (s *HelloService) Hello(request string, reply *string) error {
+	//返回值是通过修改reply的值
+	*reply = "hello, " + request
+	return nil
+}
 func main() {
 	// fmt.Println(add(1, 3))
 	//1.这个函数的调用参数如何传递-json（json是一种数据格式的协议）/xml/protobuf/msgpack-编码协议，json不是一个高性能的编码协议
@@ -63,25 +63,28 @@ func main() {
 	//get方法http://127.0.0.1:8000/add?a=1&b=2或http://127.0.0.1:8000?method=add&a=1&b=2
 	//返回的格式化：json{"data":3}
 	//1、callId的问题：r.URL.Path，2、数据的传输协议：url的参数传输协议，3、网络传输协议：http
-	http.HandleFunc("/add", func(w http.ResponseWriter, r *http.Request) {
-		err := r.ParseForm() //解析参数
-		if err != nil {
-			panic("error")
-		}
-		fmt.Println("path:", r.URL.Path)
-		a, err := strconv.Atoi(r.Form["a"][0])
-		if err != nil {
-			panic("transform error")
-		}
-		b, err := strconv.Atoi(r.Form["b"][0])
-		if err != nil {
-			panic("transform error")
-		}
-		w.Header().Set("Content-Type", "application/json")
-		jData, err := json.Marshal(map[string]int{
-			"data": a + b,
-		})
-		w.Write(jData)
-	})
-	_ = http.ListenAndServe(":8000", http.TimeoutHandler(http.DefaultServeMux, time.Duration(10*time.Second), "Request timed out"))
+	// http.HandleFunc("/add", func(w http.ResponseWriter, r *http.Request) {
+	// 	err := r.ParseForm() //解析参数
+	// 	if err != nil {
+	// 		panic("error")
+	// 	}
+	// 	fmt.Println("path:", r.URL.Path)
+	// 	a, err := strconv.Atoi(r.Form["a"][0])
+	// 	if err != nil {
+	// 		panic("transform error")
+	// 	}
+	// 	b, err := strconv.Atoi(r.Form["b"][0])
+	// 	if err != nil {
+	// 		panic("transform error")
+	// 	}
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	jData, err := json.Marshal(map[string]int{
+	// 		"data": a + b,
+	// 	})
+	// 	w.Write(jData)
+	// })
+	// _ = http.ListenAndServe(":8000", http.TimeoutHandler(http.DefaultServeMux, time.Duration(10*time.Second), "Request timed out"))
+
+	//rpc快速开发体验
+
 }
