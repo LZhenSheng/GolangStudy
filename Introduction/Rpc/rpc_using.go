@@ -1,5 +1,7 @@
 package main
 
+import "net/rpc"
+
 func add(a, b int) int {
 	return a + b
 }
@@ -86,5 +88,5 @@ func main() {
 	// _ = http.ListenAndServe(":8000", http.TimeoutHandler(http.DefaultServeMux, time.Duration(10*time.Second), "Request timed out"))
 
 	//rpc快速开发体验
-
+	rpc.RegisterName("Hello")
 }
