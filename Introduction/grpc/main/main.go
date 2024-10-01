@@ -7,10 +7,31 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
+type Hello struct {
+	Name    string   `json:"name"`
+	Age     int      `json:"age"`
+	Courses []string `json:"courses"`
+}
+
 func main() {
+	// req := protos.HelloRquest{
+	// 	Name:    "bobby",
+	// 	Age:     18,
+	// 	Courses: []string{"go", "gin", "微服务"},
+	// }
+	// jsonStruct := Hello{Name: "bobby"}
+	// jsonRsp, _ := json.Marshal(jsonStruct)
+	// fmt.Println(len(string(jsonRsp)))
+	// rsp, _ := proto.Marshal(&req)
+	// fmt.Println(len(string(rsp)))
+
 	req := protos.HelloRquest{
-		Name: "bobby",
+		Name:    "bobby",
+		Age:     18,
+		Courses: []string{"go", "gin", "微服务"},
 	}
 	rsp, _ := proto.Marshal(&req)
-	fmt.Println(string(rsp))
+	newReq := protos.HelloRquest{}
+	_ = proto.Unmarshal(rsp, &newReq)
+	fmt.Println(newReq.Name, newReq.Age, newReq.Courses)
 }
