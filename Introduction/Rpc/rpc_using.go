@@ -48,6 +48,7 @@ func (s *HelloService) Hello(request string, reply *string) error {
 	*reply = "hello, " + request
 	return nil
 }
+
 func main() {
 	// fmt.Println(add(1, 3))
 	//1.这个函数的调用参数如何传递-json（json是一种数据格式的协议）/xml/protobuf/msgpack-编码协议，json不是一个高性能的编码协议
@@ -91,16 +92,49 @@ func main() {
 	// _ = http.ListenAndServe(":8000", http.TimeoutHandler(http.DefaultServeMux, time.Duration(10*time.Second), "Request timed out"))
 
 	//rpc快速开发体验
-	//1.实例化一个server
-	listener, _ := net.Listen("tcp", ":1234")
-	//2.注册处理逻辑
-	_ = rpc.RegisterName("HelloService", &HelloService{})
-	//3.启动服务
-	conn, _ := listener.Accept() //当一个新的连接进来的时候
-	rpc.ServeConn(conn)
+	// //1.实例化一个server
+	// listener, _ := net.Listen("tcp", ":1234")
+	// //2.注册处理逻辑
+	// _ = rpc.RegisterName("HelloService", &HelloService{})
+	// //3.启动服务
+	// conn, _ := listener.Accept() //当一个新的连接进来的时候
+	// rpc.ServeConn(conn)
 
 	//一连串的代码大部分都是net的包好像和rpc没有关系
 	//不行。rpc调用中有几个问题需要解决1.call id2.序列化和反序列化 编码和解码
 	//可以跨语言调用呢1.go语言的rpc的序列化和反序列化协议是什么（Gob）.2.能否替换成常见的序列化
+
+	// //替换rpc的序列化协议为json
+	// //1.实例化一个server
+	// listener, _ := net.Listen("tcp", ":1234")
+	// //2.注册处理逻辑
+	// _ = rpc.RegisterName("HelloService", &HelloService{})
+	// //3.启动服务
+	// conn, _ := listener.Accept() //当一个新的连接进来的时候
+	// rpc.ServeCodec(jsonrpc.NewServerCodec(conn))
+
+	// //替换rpc的序列化协议为http
+	// //2.注册处理逻辑
+	// _ = rpc.RegisterName("HelloService", &HelloService{})
+	// http.HandleFunc("/jsonrpc", func(w http.ResponseWriter, r *http.Request) {
+	// 	var conn io.ReadWriteCloser = struct {
+	// 		io.Writer
+	// 		io.ReadCloser
+	// 	}{
+	// 		ReadCloser: r.Body,
+	// 		Writer:     w,
+	// 	}
+	// 	rpc.ServeRequest(jsonrpc.NewServerCodec(conn))
+	// })
+	// http.ListenAndServe(":1234", nil)
+
+	//进一步改造rpc调用的代码
+	//1.实例化一个server
+	listener, _ := net.Listen("tcp", ":1234")
+	//2.注册处理逻辑handler
+	_ = rpc.RegisterName("HelloService", &HelloService{})
+	//3.启动服务
+	conn, _ := listener.Accept() //当一个新的连接进来的时候
+	rpc.ServeConn(conn)
 
 }
