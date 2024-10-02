@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+// 生成proto文件所在包路径
+package protos;
+option go_package = ".;proto";
+// 影响go文件生成位置和包名
+service Greeter{
+    rpc GetStream(StreamReqData)returns(stream SteramResData);//服务端流模式
+    rpc PostStream(stream StreamReqData)returns(stream SteramResData);//客户端流模式
+    rpc AllStream(stream StreamReqData)returns(stream SteramResData);//双向流模式
+}
+message StreamReqData{
+    string data=1;
+}
+message SteramResData{
+    string data=1;
+}

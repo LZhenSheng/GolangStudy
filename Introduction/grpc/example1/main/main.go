@@ -1,7 +1,7 @@
 package main
 
 import (
-	"GolangStudy/Introduction/grpc/protos"
+	"GolangStudy/Introduction/grpc/example1/protos"
 	"fmt"
 
 	"github.com/golang/protobuf/proto"
