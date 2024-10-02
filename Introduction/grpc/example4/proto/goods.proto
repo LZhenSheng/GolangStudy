@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+// 生成proto文件所在包路径
+package protos;
+// 影响go文件生成位置和包名
+//.是当前文件夹
+option go_package = ".;proto";
+service Greeter{
+    rpc SayHello(HelloRquest)returns(HelloReply);//hello接口
+}
+message HelloRquest{
+    string name=1;//1是编号不是值
+}
+message HelloReply{
+    string message=1;
+}

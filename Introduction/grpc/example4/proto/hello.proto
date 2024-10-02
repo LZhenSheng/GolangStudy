@@ -1,0 +1,25 @@
+syntax = "proto3";
+// 生成proto文件所在包路径
+package protos;
+// 影响go文件生成位置和包名
+//.是当前文件夹
+option go_package = ".;proto";
+import "base.proto";
+import "google/protobuf/empty.proto";
+service Greeter{
+    rpc SayHello(HelloRquest)returns(HelloReply);//hello接口
+    rpc Ping(google.protobuf.Empty)returns (Pong);
+}
+message HelloRquest{
+    string name=1;//1是编号不是值
+    string url=2;
+}
+
+message HelloReply{
+    string message=1;
+    repeated Result data=2;
+    message Result{
+        string name=1;
+        string url=2;
+    }
+}

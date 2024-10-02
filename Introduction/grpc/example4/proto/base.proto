@@ -1,0 +1,10 @@
+syntax = "proto3";
+// 生成proto文件所在包路径
+package protos;
+// 影响go文件生成位置和包名
+//.是当前文件夹
+option go_package = ".;proto";
+message Empty{}
+message Pong{
+    string id=1;
+}
