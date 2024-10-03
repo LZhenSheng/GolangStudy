@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+// 生成proto文件所在包路径
+package protos;
+// 影响go文件生成位置和包名
+//.是当前文件夹
+option go_package = ".;proto1";
+import "google/protobuf/timestamp.proto";
+service Greeter{
+    rpc SayHello(HelloRquest)returns(HelloReply);//hello接口
+}
+enum Gender{
+    MALE=0;
+    FEMALE=1;
+}
+message HelloRquest{
+    string name=1;//1是编号不是值
+    Gender g=2;
+    map<string,string> mp=3;
+    google.protobuf.Timestamp addTime=4;
+}
+message HelloReply{
+    string message=1;
+}

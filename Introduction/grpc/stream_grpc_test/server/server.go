@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	_ "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 )
 
@@ -63,6 +64,7 @@ func (s *server) AllStream(allStr proto.Greeter_AllStreamServer) error {
 	return nil
 }
 func main() {
+	// empty.Empty{}
 	lis, err := net.Listen("tcp", PORT)
 	if err != nil {
 		panic(err)
