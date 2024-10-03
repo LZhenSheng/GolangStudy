@@ -4,6 +4,7 @@ import (
 	"GolangStudy/Introduction/grpc/error/proto"
 	"context"
 	"fmt"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
@@ -16,7 +17,8 @@ func main() {
 	}
 	defer conn.Close()
 	c := proto.NewGreeterClient(conn)
-	r, err := c.SayHello(context.Background(), &proto.HelloRquest{
+	ctx, _ := context.WithTimeout(context.TODO(), time.Second*3)
+	r, err := c.SayHello(ctx, &proto.HelloRquest{
 		Name: "bobby",
 	})
 	if err != nil {
