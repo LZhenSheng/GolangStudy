@@ -59,7 +59,8 @@ func main() {
 	db.Where(&User{Name: "jinzhu1"}).Find(&users)
 	fmt.Println(user)
 	fmt.Println(users)
-	//拼sql更灵活
-	//struct屏蔽变量名和表的字段的对应关系
-	//map不灵活，但是可以解决strct屏蔽零值的问题
+	//string(拼sql)更灵活 最后
+	//struct屏蔽变量名和表的字段的对应关系 最优先
+	//map不灵活，但是可以解决strct屏蔽零值的问题 优先
+
 }
