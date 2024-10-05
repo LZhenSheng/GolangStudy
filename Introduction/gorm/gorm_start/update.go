@@ -53,14 +53,13 @@ func main() {
 	_ = db.AutoMigrate(&User{})
 
 	var user User
-	var users []User
-	// db.Where("name=?", "jinzhu1").Find(&user)
-	db.Where(&User{Name: "jinzhu1"}).Find(&user)
-	db.Where(&User{Name: "jinzhu1"}).Find(&users)
-	fmt.Println(user)
-	fmt.Println(users)
-	//string(拼sql)更灵活 最后
-	//struct屏蔽变量名和表的字段的对应关系 最优先
-	//map不灵活，但是可以解决strct屏蔽零值的问题 优先
+	db.First(&user)
+	user.Name = "bobby test"
+	user.Age = 10
+	//1通过save更新
+	db.Save(&user) //create和update集一身
 
+	//2通过update更新
+	result := db.Model(&User{}).Where("name=?", "bobby").Update("name", "bobby111")
+	fmt.Println(result.RowsAffected)
 }
