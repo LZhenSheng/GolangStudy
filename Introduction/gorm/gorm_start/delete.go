@@ -12,7 +12,7 @@ package main
 // 	"gorm.io/gorm/logger"
 // )
 
-// type User struct {
+// type NewUser struct {
 // 	ID           uint           // Standard field for the primary key
 // 	Name         string         // A regular string field
 // 	Email        *string        // A pointer to a string, allowing for null values
@@ -22,6 +22,7 @@ package main
 // 	ActivatedAt  sql.NullTime   // Uses sql.NullTime for nullable time fields
 // 	CreatedAt    time.Time      // Automatically managed by GORM for creation time
 // 	UpdatedAt    time.Time      // Automatically managed by GORM for update time
+// 	Deleted      gorm.DeletedAt
 // }
 
 // func main() {
@@ -50,16 +51,38 @@ package main
 
 // 	//定义表结构
 // 	//迁移 schema
-// 	_ = db.AutoMigrate(&User{})
+// 	_ = db.AutoMigrate(&NewUser{})
 
-// 	var user User
-// 	db.First(&user)
-// 	user.Name = "bobby test"
-// 	user.Age = 10
-// 	//1通过save更新
-// 	db.Save(&user) //create和update集一身
+// 	// var users = []NewUser{
+// 	// 	{Name: "jinzhu1"},
+// 	// 	{Name: "jinzhu2"},
+// 	// 	{Name: "jinzhu3"},
+// 	// }
+// 	// db.Create(&users)
 
-// 	//2通过update更新
-// 	result := db.Model(&User{}).Where("name=?", "bobby").Update("name", "bobby111")
+// 	// for _, user := range users {
+// 	// 	fmt.Println(user.ID)
+// 	// }
+
+// 	//gorm软删除
+// 	// db.Delete(&NewUser{}, 2)
+
+// 	// var users []NewUser
+// 	// result := db.Find(&users)
+// 	// for _, user := range users {
+// 	// 	fmt.Println(user.ID)
+// 	// }
+// 	// fmt.Println(result.RowsAffected)
+// 	// fmt.Println(result.Error)
+
+// 	//gorm硬删除
+// 	db.Unscoped().Delete(&NewUser{}, 2)
+
+// 	var users []NewUser
+// 	result := db.Find(&users)
+// 	for _, user := range users {
+// 		fmt.Println(user.ID)
+// 	}
 // 	fmt.Println(result.RowsAffected)
+// 	fmt.Println(result.Error)
 // }
