@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -10,21 +9,25 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
 )
 
-type NewUser struct {
-	ID           uint           // Standard field for the primary key
-	Name         string         // A regular string field
-	Email        *string        // A pointer to a string, allowing for null values
-	Age          uint8          // An unsigned 8-bit integer
-	Birthday     *time.Time     // A pointer to time.Time, can be null
-	MemberNumber sql.NullString // Uses sql.NullString to handle nullable strings
-	ActivatedAt  sql.NullTime   // Uses sql.NullTime for nullable time fields
-	CreatedAt    time.Time      // Automatically managed by GORM for creation time
-	UpdatedAt    time.Time      // Automatically managed by GORM for update time
-	Deleted      gorm.DeletedAt
+type Language struct {
+	// gorm.Model
+	Name    string
+	AddTime time.Time //创建时自动加入时间
 }
 
+// // 在gorm中可以通过给某一个结构体添加TableName实现自定义表名
+//
+//	func (Language) TableName() string {
+//		return "my_language"
+//	}
+
+func (l *Language) BeforeCreate(tx *gorm.DB) (err error) {
+	l.AddTime = time.Now()
+	return nil
+}
 func main() {
 	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details
 	dsn := "root:root123456@tcp(127.0.0.1:3306)/gorm_test?charset=utf8mb4&parseTime=True&loc=Local"
@@ -43,14 +46,21 @@ func main() {
 	)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		//添加前缀
+		NamingStrategy: schema.NamingStrategy{
+			TablePrefix: "maxshop_",
+		},
 		Logger: newLogger,
 	})
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	//定义表结构
-	//迁移 schema
-	_ = db.AutoMigrate(&NewUser{})
+	// 定义表结构
+	// 迁移 schema
+	_ = db.AutoMigrate(&Language{})
+	db.Create(&Language{
+		Name: "ptyhon",
+	})
 
 }
