@@ -1,0 +1,5 @@
+global全局变量新建和初始化
+handler业务相关代码
+model用户相关表结构
+proto接口
+main.go服务启动
