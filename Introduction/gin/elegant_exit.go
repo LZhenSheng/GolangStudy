@@ -25,6 +25,8 @@ func main() {
 	}()
 	//接受信号
 	quit := make(chan os.Signal)
+	//syscall.SIGINT ctrl+c
+
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	//处理后续的逻辑
