@@ -22,7 +22,7 @@ message IdRequest{
     int32 id=1;
 }
 message CreateUserInfo{
-    string nickName=1;
+    // string nickName=1;
     string passWord=2;
     string mobile=3;
 }
