@@ -10,7 +10,7 @@ import (
 type BaseModel struct {
 	ID        int32          `gorm:"primarykey"` //主码
 	CreatedAt time.Time      `gorm:"column:add_time"`
-	UpdateAt  time.Time      `gorm:"column:update_time"`
+	UpdatedAt time.Time      `gorm:"column:update_time"`
 	DeletedAt gorm.DeletedAt //软删除
 	IsDeleted bool
 }

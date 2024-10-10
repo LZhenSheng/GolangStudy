@@ -118,7 +118,6 @@ type UserServer interface {
 	CreateUser(context.Context, *CreateUserInfo) (*UserInfoResponse, error)
 	UpdateUser(context.Context, *UpdateUserInfo) (*emptypb.Empty, error)
 	CheckPassword(context.Context, *PasswordCheckInfo) (*CheckResponse, error)
-	mustEmbedUnimplementedUserServer()
 }
 
 // UnimplementedUserServer must be embedded to have
