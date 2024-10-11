@@ -112,7 +112,7 @@ func (s *UserServer) CreateUser(ctx context.Context, req *proto.CreateUserInfo) 
 	user.NickName = req.NickName
 	//密码加密
 	options := &password.Options{16, 100, 32, sha512.New}
-	salt, encodedPwd := password.Encode("generic password", options)
+	salt, encodedPwd := password.Encode(req.PassWord, options)
 	//$算法$
 	user.Password = fmt.Sprintf("$pbkdf2-sha512$%s$%s", salt, encodedPwd)
 	result = global.DB.Create(&user)

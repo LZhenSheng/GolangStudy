@@ -14,9 +14,9 @@ func GetEnvInfo(env string) bool {
 }
 func InitConfig() {
 	debug := GetEnvInfo("VIPER_DEBUG")
-	configFileName := "/usr/local/go/src/GolangStudy/GolangStudy/Practice/shop/user-web/config-debug.yaml"
+	configFileName := "/usr/local/go/src/GolangStudy/GolangStudy/Practice/shop/user-web/config-pro.yaml"
 	if debug {
-		configFileName = "config-debug.yaml"
+		configFileName = "/usr/local/go/src/GolangStudy/GolangStudy/Practice/shop/user-web/config-debug.yaml"
 	}
 	v := viper.New()
 	v.SetConfigFile(configFileName)

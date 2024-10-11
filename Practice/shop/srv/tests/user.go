@@ -52,9 +52,18 @@ func TestCreateUser() {
 		fmt.Println(rsp.Id)
 	}
 }
+func TestCheckPassword() {
+	rsp, err := userClient.CheckPassword(context.Background(), &proto.PasswordCheckInfo{
+		Password:          "admin123",
+		EncryptedPassword: "$pbkdf2-sha512$mzfWQ3Z51CPZIRwo$5f41d71e7a9c24d665f2ee271d1d49530e0ae58f30ad591f0d328e225a3621b0",
+	})
+	fmt.Println(err)
+	fmt.Println(rsp)
+}
 func main() {
 	Init()
 	// TestCreateUser()
-	TestGetUserList()
+	// TestGetUserList()
+	TestCheckPassword()
 	conn.Close()
 }

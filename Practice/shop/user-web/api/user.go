@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
@@ -19,6 +20,8 @@ import (
 	"GolangStudy/Practice/shop/user-web/forms"
 	"GolangStudy/Practice/shop/user-web/global"
 	"GolangStudy/Practice/shop/user-web/global/response"
+	"GolangStudy/Practice/shop/user-web/middlewares"
+	"GolangStudy/Practice/shop/user-web/models"
 )
 
 func removeTopStruct(fileds map[string]string) map[string]string {
@@ -91,6 +94,19 @@ func HandleGrpcErrorToHttp(err error, c *gin.Context) {
 		}
 	}
 }
+func HandleValidatorError(ctx *gin.Context, err error) {
+	errs, ok := err.(validator.ValidationErrors)
+	if !ok {
+		ctx.JSON(http.StatusOK, gin.H{
+			"msg": err.Error(),
+		})
+	}
+	ctx.JSON(http.StatusBadRequest, gin.H{
+		"error": removeTopStruct(errs.Translate(global.Trans)),
+	})
+	fmt.Println(err.Error())
+	return
+}
 func GetUserList(ctx *gin.Context) {
 	//拨号连接用户grpc服务器
 	userConn, err := grpc.Dial(fmt.Sprintf("%s:%d", global.ServerConfig.UserSrvInfo.Host, global.ServerConfig.UserSrvInfo.Port), grpc.WithInsecure())
@@ -99,6 +115,9 @@ func GetUserList(ctx *gin.Context) {
 			"msg", err.Error(),
 		)
 	}
+	claims, _ := ctx.Get("claims")
+	currentUser := claims.(*models.CustomClaims)
+	zap.S().Infof("访问用户:%d", currentUser.ID)
 	//生成grpc的client并调用接口
 	userSrvClient := proto.NewUserClient(userConn)
 	pn := ctx.DefaultQuery("pn", "0")
@@ -132,18 +151,78 @@ func GetUserList(ctx *gin.Context) {
 func PassWordLogin(ctx *gin.Context) {
 	//表单验证
 	passwordLoginForm := forms.PassWordLoginForm{}
-	if err := ctx.ShouldBindJSON(&passwordLoginForm); err != nil {
-		errs, ok := err.(validator.ValidationErrors)
-		if !ok {
-			ctx.JSON(http.StatusOK, gin.H{
-				"msg": err.Error(),
+	if err := ctx.ShouldBind(&passwordLoginForm); err != nil {
+		HandleValidatorError(ctx, err)
+		return
+	}
+	//拨号连接用户grpc服务器
+	userConn, err := grpc.Dial(fmt.Sprintf("%s:%d", global.ServerConfig.UserSrvInfo.Host, global.ServerConfig.UserSrvInfo.Port), grpc.WithInsecure())
+	if err != nil {
+		zap.S().Errorw("[GetUserList]连接[用户服务失败]",
+			"msg", err.Error(),
+		)
+	}
+	//生成grpc的client并调用接口
+	userSrvClient := proto.NewUserClient(userConn)
+
+	//登录的逻辑
+	if rsp, err := userSrvClient.GetUserByMobile(context.Background(), &proto.MobileRequest{
+		Mobile: passwordLoginForm.Mobile,
+	}); err != nil {
+		if e, ok := status.FromError(err); ok {
+			switch e.Code() {
+			case codes.NotFound:
+				ctx.JSON(http.StatusBadRequest, map[string]string{
+					"mobile": "用户不存在",
+				})
+			default:
+				ctx.JSON(http.StatusInternalServerError, map[string]string{
+					"mobile": "登录失败",
+				})
+			}
+			return
+		}
+	} else {
+		//检查密码
+		if passRsp, passErr := userSrvClient.CheckPassword(context.Background(), &proto.PasswordCheckInfo{
+			Password:          passwordLoginForm.Password,
+			EncryptedPassword: rsp.Password,
+		}); passErr != nil {
+			ctx.JSON(http.StatusInternalServerError, map[string]string{
+				"msg": "登录失败",
 			})
 		} else {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"error": removeTopStruct(errs.Translate(global.Trans)),
-			})
+			if passRsp.Success {
+				//生成token
+				j := middlewares.NewJWT()
+				claims := models.CustomClaims{
+					ID:          uint(rsp.Id),
+					NickName:    rsp.NickName,
+					AuthorityId: uint(rsp.Role),
+					StandardClaims: jwt.StandardClaims{
+						NotBefore: time.Now().Unix(),               //签名的生效时间,
+						ExpiresAt: time.Now().Unix() + 60*60*24*30, //30天过期
+						Issuer:    "bobby",
+					},
+				}
+				token, err := j.CreateToken(claims)
+				if err != nil {
+					ctx.JSON(http.StatusInternalServerError, gin.H{
+						"msg": "生成token失败",
+					})
+					return
+				}
+				ctx.JSON(http.StatusOK, gin.H{
+					"id":         rsp.Id,
+					"nick_name":  rsp.NickName,
+					"token":      token,
+					"expired_at": (time.Now().Unix() + 60*60*24*30) * 1000,
+				})
+			} else {
+				ctx.JSON(http.StatusBadRequest, map[string]string{
+					"msg": "登录失败",
+				})
+			}
 		}
-		fmt.Println(err.Error())
-		return
 	}
 }
